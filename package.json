@@ -1,32 +1,33 @@
 {
-  "name": "@elevenlabs/n8n-nodes-elevenlabs",
-  "version": "0.2.2",
-  "description": "Official ElevenLabs node for n8n",
+  "name": "@resemble/n8n-nodes-resemble",
+  "version": "0.1.0",
+  "description": "Resemble AI node for n8n",
   "keywords": [
     "n8n-community-node-package",
-    "ElevenLabs",
+    "Resemble",
+    "Resemble AI",
     "voice ai",
     "text to speech",
-    "speech to text",
-    "elevenlabs",
-    "elevenlabs api",
-    "elevenlabs node",
-    "elevenlabs n8n",
-    "elevenlabs n8n node",
+    "voice cloning",
+    "resemble",
+    "resemble api",
+    "resemble node",
+    "resemble n8n",
+    "resemble n8n node",
     "conversational ai",
     "conversational ai node",
     "conversational ai n8n",
     "conversational ai n8n node",
-    "voice agents",
-    "voice agents node",
-    "voice agents n8n",
-    "voice agents n8n node"
+    "voice synthesis",
+    "voice synthesis node",
+    "voice synthesis n8n",
+    "voice synthesis n8n node"
   ],
   "license": "MIT",
-  "homepage": "elevenlabs.io",
+  "homepage": "resemble.ai",
   "author": {
-    "name": "Angelo Giacco",
-    "email": "angelo@elevenlabs.io"
+    "name": "Resemble AI",
+    "email": "support@resemble.ai"
   },
   "repository": {
     "type": "git",
@@ -50,10 +51,10 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/ElevenLabsApi.credentials.js"
+      "dist/credentials/ResembleApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/elevenlabs/ElevenLabs.node.js"
+      "dist/nodes/resembleai/ResembleAi.node.js"
     ]
   },
   "devDependencies": {

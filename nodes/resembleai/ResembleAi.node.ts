@@ -3,30 +3,30 @@ import { VoiceOperations, VoiceFields } from './Descriptions/voice';
 import { listSearch } from './Descriptions/utils';
 import { SpeechFields, SpeechOperations } from './Descriptions/speech';
 
-export class ElevenLabs implements INodeType {
+export class ResembleAi implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'ElevenLabs',
-		name: 'elevenLabs',
+		displayName: 'Resemble AI',
+		name: 'resembleAi',
 		icon: 'file:elevenlabs.svg',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Interact with ElevenLabs API',
+		description: 'Interact with Resemble AI API',
 		defaults: {
-			name: 'ElevenLabs',
+			name: 'Resemble AI',
 		},
 		usableAsTool: true,
 		inputs: [NodeConnectionType.Main],
 		outputs: [NodeConnectionType.Main],
 		credentials: [
 			{
-				name: 'elevenLabsApi',
+				name: 'resembleApi',
 				required: true,
 			},
 		],
 		requestDefaults: {
 			method: 'POST',
-			baseURL: 'https://api.elevenlabs.io/v1',
+			baseURL: 'https://app.resemble.ai/api/v2',
 			headers: {
 				'Content-Type': 'application/json',
 			},
