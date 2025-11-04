@@ -7,7 +7,7 @@ export class ResembleAi implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Resemble AI',
 		name: 'resembleAi',
-		icon: 'file:elevenlabs.svg',
+		icon: 'file:resemble.svg',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
