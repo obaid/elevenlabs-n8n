@@ -181,7 +181,6 @@ export const VoiceFields: INodeProperties[] = [
 		default: 50,
 		typeOptions: {
 			minValue: 1,
-			maxValue: 1000,
 		},
 		displayOptions: {
 			show: {
@@ -190,7 +189,7 @@ export const VoiceFields: INodeProperties[] = [
 				returnAll: [false],
 			},
 		},
-		description: 'Max number of results to return (10-1000)',
+		description: 'Max number of results to return',
 	},
 	{
 		displayName: 'Page',
