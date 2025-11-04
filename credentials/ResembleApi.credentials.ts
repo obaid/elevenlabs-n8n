@@ -5,14 +5,14 @@ import {
 	INodeProperties,
 } from 'n8n-workflow';
 
-export class ElevenLabsApi implements ICredentialType {
-	name = 'elevenLabsApi';
-	displayName = 'ElevenLabs API';
-	documentationUrl = 'https://docs.elevenlabs.io/api-reference';
+export class ResembleApi implements ICredentialType {
+	name = 'resembleApi';
+	displayName = 'Resemble AI API';
+	documentationUrl = 'https://docs.app.resemble.ai/docs/1.0.0/authentication/';
 	properties: INodeProperties[] = [
 		{
-			displayName: 'ElevenLabs API Key',
-			name: 'xiApiKey',
+			displayName: 'Resemble API Key',
+			name: 'apiKey',
 			type: 'string',
 			typeOptions: { password: true },
 			default: '',
@@ -23,14 +23,14 @@ export class ElevenLabsApi implements ICredentialType {
 		type: 'generic',
 		properties: {
 			headers: {
-				'xi-api-key': '={{$credentials.xiApiKey}}',
+				'Authorization': '=Token token={{$credentials.apiKey}}',
 			},
 		},
 	};
 
 	test: ICredentialTestRequest | undefined = {
 		request: {
-			baseURL: 'https://api.elevenlabs.io/v2',
+			baseURL: 'https://app.resemble.ai/api/v2',
 			url: '/voices',
 		},
 	};

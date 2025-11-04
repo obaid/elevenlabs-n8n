@@ -24,15 +24,20 @@ export const VoiceOperations: INodeProperties[] = [
 					output: {
 						postReceive: [
 							{
+								type: 'rootProperty',
+								properties: {
+									property: 'item',
+								},
+							},
+							{
 								type: 'setKeyValue',
 								enabled: '={{$parameter["simplify"]}}',
 								properties: {
-									voice_id: '={{$responseItem.voice_id}}',
+									uuid: '={{$responseItem.uuid}}',
 									name: '={{$responseItem.name}}',
-									category: '={{$responseItem.category}}',
-									labels: '={{$responseItem.labels}}',
-									description: '={{$responseItem.description}}',
-									preview_url: '={{$responseItem.preview_url}}',
+									status: '={{$responseItem.status}}',
+									voice_type: '={{$responseItem.voice_type}}',
+									default_language: '={{$responseItem.default_language}}',
 								},
 							},
 						],
@@ -51,29 +56,26 @@ export const VoiceOperations: INodeProperties[] = [
 						url: '/voices',
 						qs: {
 							page_size: '={{$parameter["limit"]}}',
+							page: '={{$parameter["page"] || 1}}',
 						},
 					},
-					/*send: {
-						paginate: '={{$parameter["returnAll"]}}',
-					},*/
 					output: {
 						postReceive: [
 							{
 								type: 'rootProperty',
 								properties: {
-									property: 'voices',
+									property: 'items',
 								},
 							},
 							{
 								type: 'setKeyValue',
 								enabled: '={{$parameter["simplify"]}}',
 								properties: {
-									voice_id: '={{$responseItem.voice_id}}',
+									uuid: '={{$responseItem.uuid}}',
 									name: '={{$responseItem.name}}',
-									category: '={{$responseItem.category}}',
-									labels: '={{$responseItem.labels}}',
-									description: '={{$responseItem.description}}',
-									preview_url: '={{$responseItem.preview_url}}',
+									status: '={{$responseItem.status}}',
+									voice_type: '={{$responseItem.voice_type}}',
+									default_language: '={{$responseItem.default_language}}',
 								},
 							},
 						],
@@ -81,21 +83,27 @@ export const VoiceOperations: INodeProperties[] = [
 				},
 			},
 			{
-				name: 'Create Clone',
-				value: 'createClone',
-				action: 'Create a voice clone',
-				description: 'Create a voice clone from audio files',
+				name: 'Create',
+				value: 'create',
+				action: 'Create a voice',
+				description: 'Create a new voice (rapid or professional clone)',
 				routing: {
 					send: {
-						preSend: [ preSendAudioFiles ],
+						preSend: [ preSendCreateVoice ],
 					},
 					request: {
-						url: '/voices/add',
-						returnFullResponse: true,
+						url: '/voices',
 						method: 'POST',
-						headers: {
-							'Content-Type': 'multipart/form-data',
-						},
+					},
+					output: {
+						postReceive: [
+							{
+								type: 'rootProperty',
+								properties: {
+									property: 'item',
+								},
+							},
+						],
 					},
 				},
 			},
@@ -148,7 +156,7 @@ export const VoiceFields: INodeProperties[] = [
 				displayName: 'ID',
 				name: 'id',
 				type: 'string',
-				placeholder: '9BWtsMINqrJLrRacOk9x',
+				placeholder: '1ab233c4-5d67-8ef9-0g1h-234567890abc',
 			},
 		],
 		required: true,
@@ -184,6 +192,22 @@ export const VoiceFields: INodeProperties[] = [
 		description: 'Max number of results to return',
 	},
 	{
+		displayName: 'Page',
+		name: 'page',
+		type: 'number',
+		default: 1,
+		typeOptions: {
+			minValue: 1,
+		},
+		displayOptions: {
+			show: {
+				operation: ['getAll'],
+				resource: ['voice'],
+			},
+		},
+		description: 'Page number to retrieve',
+	},
+	{
 		displayName: 'Simplify',
 		name: 'simplify',
 		type: 'boolean',
@@ -196,32 +220,44 @@ export const VoiceFields: INodeProperties[] = [
 			},
 		},
 	},
-	// Create Clone
+	// Create Voice
 	{
 		displayName: 'Name',
 		name: 'name',
 		type: 'string',
 		default: '',
 		placeholder: 'e.g. Rachel',
-		description: 'The name of the cloned voice',
+		description: 'The name of the voice',
 		displayOptions: {
 			show: {
 				resource: ['voice'],
-				operation: ['createClone'],
+				operation: ['create'],
 			},
 		},
+		required: true,
 	},
 	{
-		displayName: 'Audio Files',
-		name: 'audioFiles',
-		type: 'string',
-		default: '',
-		placeholder: 'data',
-		description: 'The audio files to be used for voice cloning',
+		displayName: 'Voice Type',
+		name: 'voiceType',
+		type: 'options',
+		options: [
+			{
+				name: 'Rapid',
+				value: 'rapid',
+				description: 'Fast voice clone (requires 10+ seconds of audio, created in under 1 minute)',
+			},
+			{
+				name: 'Professional',
+				value: 'professional',
+				description: 'High-quality voice clone (requires 10+ minutes of audio, takes ~40 minutes)',
+			},
+		],
+		default: 'rapid',
+		description: 'The type of voice clone to create',
 		displayOptions: {
 			show: {
 				resource: ['voice'],
-				operation: ['createClone'],
+				operation: ['create'],
 			},
 		},
 	},
@@ -234,49 +270,66 @@ export const VoiceFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['voice'],
-				operation: ['createClone'],
+				operation: ['create'],
 			},
 		},
 		options: [
 			{
-				displayName: 'Description',
-				description: 'A description of the voice',
-				name: 'description',
+				displayName: 'Dataset URL',
+				description: 'URL to the training dataset (audio files)',
+				name: 'datasetUrl',
 				type: 'string',
-				default: ``,
-				placeholder: 'e.g. A warm, expressive voice with a touch of humor',
+				default: '',
+				placeholder: 'https://example.com/audio-dataset.zip',
 			},
 			{
-				displayName: 'Labels',
-				description: 'Key / value pairs to tag this voice with',
-				name: 'labels',
-				type: 'json',
-				default: `{
-  "accent": "American",
-  "gender": "Female",
-  "age": "Middle-aged"
-}`,
+				displayName: 'Language',
+				description: 'Language code for the voice (default: en-US)',
+				name: 'language',
+				type: 'string',
+				default: 'en-US',
+				placeholder: 'e.g. en-US, es-ES, fr-FR',
+			},
+			{
+				displayName: 'Callback URI',
+				description: 'Webhook URL to receive training completion notifications',
+				name: 'callbackUri',
+				type: 'string',
+				default: '',
+				placeholder: 'https://example.com/webhook',
 			},
 		],
 	},
 
 ];
 
-async function preSendAudioFiles(this: IExecuteSingleFunctions, requestOptions: IHttpRequestOptions): Promise<IHttpRequestOptions> {
-	const formData = new FormData();
-	const binaryData = this.getNodeParameter('audioFiles', '') as string;
-	const fileBuffer = await this.helpers.getBinaryDataBuffer(binaryData);
+async function preSendCreateVoice(this: IExecuteSingleFunctions, requestOptions: IHttpRequestOptions): Promise<IHttpRequestOptions> {
 	const name = this.getNodeParameter('name') as string;
+	const voiceType = this.getNodeParameter('voiceType', 'rapid') as string;
+	const additionalFields = this.getNodeParameter('additionalFields', {}) as {
+		datasetUrl?: string;
+		language?: string;
+		callbackUri?: string;
+	};
 
-	const description = this.getNodeParameter('additionalFields.description', '') as string;
+	const body: any = {
+		name,
+		voice_type: voiceType,
+	};
 
-	const labels = this.getNodeParameter('additionalFields.labels', '{}') as string;
-	formData.append('name', name);
-	formData.append('description', description);
-	formData.append('labels', labels);
-	formData.append('files', new Blob([fileBuffer]));
+	if (additionalFields.datasetUrl) {
+		body.dataset_url = additionalFields.datasetUrl;
+	}
 
-	requestOptions.body = formData;
+	if (additionalFields.language) {
+		body.language = additionalFields.language;
+	}
+
+	if (additionalFields.callbackUri) {
+		body.callback_uri = additionalFields.callbackUri;
+	}
+
+	requestOptions.body = body;
 
 	return requestOptions;
 }
