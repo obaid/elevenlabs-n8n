@@ -96,8 +96,6 @@ To convert text to speech using Resemble AI:
 
 ## Notes
 
-This node was converted from an ElevenLabs implementation to work with Resemble AI's API. Key differences:
-
 - Text-to-speech requires a project UUID in Resemble AI
 - Voice creation uses dataset URLs instead of direct file uploads
 - Speech-to-text and speech-to-speech operations are not available in the Resemble AI API
